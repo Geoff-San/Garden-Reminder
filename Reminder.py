@@ -2,7 +2,7 @@
     # - Will need edits when I keep adding to the script
 # 2. [DONE-ish] SMTP server stuff/sending emails
     # - need to secure the app password
-# 3. Need to get datetime of system, then edit start & end date to be the two days before
+# 3. [DONE] Need to get datetime of system, then edit start & end date to be the two days before
 # 4. Figure out how to run this every morning @ 6 am
 # 5. When will I clean up and organize the code? Such as setting classes.
 
@@ -16,7 +16,16 @@ import requests_cache
 import pandas as pd
 from retry_requests import retry
 import smtplib
+from datetime import datetime
+### --------------------- DateTime variables ---------------------- ###
+today = datetime.now()
+end_day = today.day - 1
+end_date = today.strftime(f"%Y-%m-{end_day}")
 
+start_day = today.day - 2
+start_date = today.strftime(f"%Y-%m-{start_day}")
+
+### --------------------- Weather API Data Retrieval ---------------------- ###
 # Setup the Open-Meteo API client with cache and retry on error
 cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
 retry_session = retry(cache_session, retries = 5, backoff_factor = 0.2)
@@ -33,8 +42,8 @@ params = {
 	"wind_speed_unit": "mph",
 	"temperature_unit": "fahrenheit",
 	"precipitation_unit": "inch",
-	"start_date": "2025-04-10",
-	"end_date": "2025-04-11"
+	"start_date": f"{start_date}",
+	"end_date": f"{end_date}"
 }
 responses = openmeteo.weather_api(url, params=params)
 
@@ -61,7 +70,7 @@ daily_data["precipitation_sum"] = daily_precipitation_sum
 daily_dataframe = pd.DataFrame(data = daily_data)
 print(daily_dataframe) # example of printing just one value: print(daily_dataframe["precipitation_sum"])
 
-### --------------------- Next section of code ---------------------- ###
+### --------------------- Message Logic ---------------------- ###
 # LOGIC # - OPTIMIZE LATER - # - Set up in different File later -
 num_days = 0
 water_msg_init = f"""\
@@ -87,16 +96,17 @@ for x in daily_dataframe["precipitation_sum"]:
             It's time to water some plants!
             """
         print(water_msg_init) # not enough water for the last 2 days
-        exit        
+        exit
 
+### --------------------- SMTP/Email stuff ---------------------- ###
 # EMAIL SETUP # - Set up as a class? in different File later -
-	# import smtplib # applied to top of script
+	# requires "import smtplib" applied to top of script
 
 port = 587  # For starttls
 smtp_server = "smtp.gmail.com"
 sender_email = "gardeningreminderbot@gmail.com"
-receiver_email = "geoffrey.sanford@outlook.com"
-app_password = "******************" ### !!! Make secure later!!! ###
+receiver_email = "" #INSERT EMAIL
+app_password = "" #INSERT SENDERS APP PASSWORD ### !!! Make secure later!!! ###
 message = f"""\
 Subject: Precipitation Report
 
