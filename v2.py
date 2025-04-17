@@ -95,8 +95,8 @@ for x in daily_dataframe["precipitation_sum"]:
 port = 587  # For starttls
 smtp_server = "smtp.gmail.com"
 sender_email = "gardeningreminderbot@gmail.com"
-receiver_email = "charla.ashley@icloud.com"
-app_password = "rjwc wlez pntb bpol" ### !!! Make secure later!!! ###
+receiver_email = "geoffrey.sanford@outlook.com"
+app_password = "******************" ### !!! Make secure later!!! ###
 message = f"""\
 Subject: Precipitation Report
 
